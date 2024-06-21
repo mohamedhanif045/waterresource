@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Water Resource Management</title>
+    <title>Contact Form</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Custom CSS -->
@@ -17,7 +17,7 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" href="index.html">Water Resource Management in Northern Kenya</a>
+                <a class="navbar-brand" href="index.html">Water Resource Management</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -64,11 +64,15 @@
                     <button type="submit" class="btn btn-primary">Send</button>
                 </form>
             </section>
+            <section id="response">
+                <h2>Submitted Data</h2>
+                <div id="responseData"></div>
+            </section>
         </div>
     </main>
     <footer class="text-center bg-primary text-white">
         <div class="container">
-            <p>&copy; 2024 Water Resource Management in Northern Kenya. All rights reserved.</p>
+            <p>&copy; 2024 Water Resource Management. All rights reserved.</p>
             <a href="https://www.facebook.com/yourpage" class="text-white mr-3" target="_blank"><i class="fab fa-facebook-f"></i></a>
             <a href="https://www.instagram.com/yourprofile" class="text-white mr-3" target="_blank"><i class="fab fa-instagram"></i></a>
             <a href="https://www.tiktok.com/@yourusername" class="text-white mr-3" target="_blank"><i class="fab fa-tiktok"></i></a>
@@ -80,6 +84,68 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="/data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchContactData();
+        });
+
+        let form = document.querySelector("#contactForm");
+        let name = document.querySelector("#name");
+        let email = document.querySelector("#email");
+        let phone = document.querySelector("#phone");
+        let message = document.querySelector("#message");
+
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+            postContactData();
+        });
+
+        function postContactData() {
+            const objectData = {
+                name: name.value, 
+                email: email.value,
+                phone: phone.value,
+                message: message.value
+            };
+
+            fetch("http://localhost:3000/contactDatas", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(objectData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                displayResponseData(data);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function fetchContactData() {
+            fetch("http://localhost:3000/contactDatas")
+                .then(res => res.json())
+                .then(data => {
+                    displayResponseData(data);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function displayResponseData(data) {
+            const responseDiv = document.querySelector("#responseData");
+            responseDiv.innerHTML = "";
+            data.forEach(item => {
+                const itemDiv = document.createElement("div");
+                itemDiv.innerHTML = `
+                    <p><strong>Name:</strong> ${item.name}</p>
+                    <p><strong>Email:</strong> ${item.email}</p>
+                    <p><strong>Phone:</strong> ${item.phone}</p>
+                    <p><strong>Message:</strong> ${item.message}</p>
+                    <hr>
+                `;
+                responseDiv.appendChild(itemDiv);
+            });
+        }
+    </script>
 </body>
 </html>
